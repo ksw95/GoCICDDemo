@@ -42,7 +42,6 @@ jobs: #Job to execute on event
     - name: Install depencencies for GO
       run: |
         go mod init GoCICDDemo
-        go get github.com/franela/goblin #Adds package for Goblin testing
         go get github.com/tebeka/go2xunit #Adds package for conversion
         go mod tidy
         go test -v #Commands to run go test
