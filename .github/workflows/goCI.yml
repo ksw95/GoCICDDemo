@@ -12,6 +12,7 @@ jobs: #Job to execute on event
       run: |
         ls
         echo Hello there! #run terminal command
+    
     - name: Setup Go environment
       uses: actions/setup-go@v2.1.3
       with:
@@ -27,18 +28,21 @@ jobs: #Job to execute on event
       run: |
         ls
         cat calc.go #Prints the content of calc.go
+    
     - name: Checkout private repo remotely
       uses: actions/checkout@v2
       with:
         repository: lowkh2/GoSchoolRemoteExample #The hidden repo I am trying to access
         path: virtualRepoFolder #Folder to save to in my virtual env
         token: ${{ secrets.GO_SECRET_DEMO }}
+    
     - name: Show hidden files
       run: |
         cd virtualRepoFolder #To access folder of interest in my virtual env
         ls
         cat myText.txt #Show content of the file of interest
         cd ..
+    
     - name: Install depencencies for GO
       run: |
         go mod init GoCICDDemo
@@ -47,11 +51,31 @@ jobs: #Job to execute on event
         go test -v #Commands to run go test
         go test -v | go2xunit > report.xml #Run test again and output as report.xml (to show the effect)
         ls #Verify that the report is indeed created
+    
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1 #Checkout Unit Test Report Action
       if: always() #Always do it
       with:
         files: report.xml #Make use of a file we created
+    
+    - if: ${{ success() }}
+      name: Create Upload Directiory
+      run: mkdir upload
+      
+    - name: Prepare Documents
+      run: mv report.xml ./upload
+      
+    - name: Prepare Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: assetDocuments
+        path: upload
+      
+    - name: Download Content
+      uses: actions/download-artifact@v2
+      with:
+        name: assestDocuments
+      
     - if: ${{ failure() }}
       name: Create Issues Notification
       uses: nashmaniac/create-issue-action@v1.1
