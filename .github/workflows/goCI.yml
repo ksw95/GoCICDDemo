@@ -74,7 +74,7 @@ jobs: #Job to execute on event
     - name: Download Content
       uses: actions/download-artifact@v2
       with:
-        name: assestDocuments
+        name: assetDocuments
       
     - if: ${{ failure() }}
       name: Create Issues Notification
