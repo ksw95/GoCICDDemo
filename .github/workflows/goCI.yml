@@ -41,10 +41,15 @@ jobs: #Job to execute on event
         cd ..
     - name: Install depencencies for GO
       run: |
-        go mod init
+        go mod init GoCICDDemo
         go get github.com/franela/goblin #Adds package for Goblin testing
         go get github.com/tebeka/go2xunit #Adds package for conversion
         go mod tidy
         go test -v #Commands to run go test
         go test -v | go2xunit > report.xml #Run test again and output as report.xml (to show the effect)
         ls #Verify that the report is indeed created
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1 #Checkout Unit Test Report Action
+      if: always() #Always do it
+      with:
+        files: report.xml #Make use of a file we created
